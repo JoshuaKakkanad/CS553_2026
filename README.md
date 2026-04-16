@@ -34,6 +34,32 @@ This framework allows students to:
 sbt compile
 ```
 
+### Simulator CLI (CourseProject.MD track)
+
+The course-project simulator entrypoint is:
+
+```bash
+sbt "runMain edu.uic.cs553.sim.cli.SimMain"
+```
+
+Useful CLI flags:
+
+- `--config <path>`: use a specific `.conf` file (examples in `conf/`)
+- `--out <dir>`: write `graph.json` + `metrics.json` to an output directory
+- `--write-graph <path>`: write the generated graph JSON and exit
+- `--graph <path>`: load graph JSON instead of generating it
+- `--run <10s|250ms|2m>`: override `sim.runForSeconds`
+- `--inject-file <path>`: schedule injections from a text file (`atMs node kind payload...`)
+- `--interactive`: interactive injection from stdin (`send <node> <KIND> <payload...>`, `quit`)
+
+Example (run + output artifacts):
+
+```bash
+rm -rf outputs/run1
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment3_injection_demo.conf --inject-file conf/injections_demo.txt --out outputs/run1"
+ls outputs/run1
+```
+
 ### Running Examples
 
 The project includes several example applications demonstrating different distributed algorithms:

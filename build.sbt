@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
   // Akka classic runtime (required by CourseProject.MD mapping: node -> classic actor)
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+  "com.typesafe.akka" %% "akka-serialization-jackson" % akkaVersion,
 
   // We keep typed deps for existing examples/tests; the simulator core will use classic.
   "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,

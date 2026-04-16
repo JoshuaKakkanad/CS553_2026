@@ -1,0 +1,6 @@
+# atMs node kind payload...
+0 0 WORK injected-work-1
+250 1 PING injected-ping-1
+500 0 WORK injected-work-2
+750 1 PING injected-ping-2
+

@@ -17,6 +17,7 @@ object NodeActor:
     allowedOnEdge: Map[NodeId, Set[MsgKind]],
     pdf: Pdf,
     timer: Option[FiniteDuration],
+    timerMode: TimerMode,
     seed: Long
   ) extends Msg
 
@@ -35,6 +36,7 @@ final class NodeActor(id: NodeId, algorithms: List[DistributedAlgorithm])
   private var allowed: Map[NodeId, Set[MsgKind]] = Map.empty
   private var pdf: Pdf = Pdf(Map.empty)
   private var rng: Random = Random(0L)
+  private var timerMode: TimerMode = TimerMode.Pdf
 
   private val ctxImpl: NodeContext = new NodeContext:
     override def selfId: NodeId = id
@@ -42,19 +44,22 @@ final class NodeActor(id: NodeId, algorithms: List[DistributedAlgorithm])
     override def send(to: NodeId, env: Algorithm.Envelope): Unit =
       val ok = allowed.getOrElse(to, Set.empty).contains(env.kind)
       if ok then
+        Metrics.recordSent(env.kind)
         nbrs.get(to).foreach(_ ! Inbound(env))
       else
+        Metrics.recordDropped(env.kind)
         log.debug(s"edge-filter drop from=${id.value} to=${to.value} kind=${env.kind}")
 
     override def logInfo(msg: String): Unit =
       log.info(msg)
 
   override def receive: Receive =
-    case Init(neighbors0, allowedOnEdge0, pdf0, timer0, seed0) =>
+    case Init(neighbors0, allowedOnEdge0, pdf0, timer0, timerMode0, seed0) =>
       nbrs = neighbors0
       allowed = allowedOnEdge0
       pdf = pdf0.normalizedOrThrow()
       rng = Random(seed0 ^ id.value.toLong)
+      timerMode = timerMode0
 
       timer0.foreach { every =>
         timers.startTimerAtFixedRate("tick", Tick, every)
@@ -65,15 +70,21 @@ final class NodeActor(id: NodeId, algorithms: List[DistributedAlgorithm])
     case Tick =>
       algorithms.foreach(_.onTick(ctxImpl))
       // baseline background traffic
-      sampleKindFromPdf(pdf).foreach { kind =>
-        sendToOneEligibleNeighbor(kind, s"tick-from-${id.value}")
-      }
+      timerMode match
+        case TimerMode.Pdf =>
+          sampleKindFromPdf(pdf).foreach { kind =>
+            sendToOneEligibleNeighbor(kind, s"tick-from-${id.value}")
+          }
+        case TimerMode.Fixed(kind) =>
+          sendToOneEligibleNeighbor(kind, s"tick-from-${id.value}")
 
     case ExternalInput(kind, payload) =>
       // treat injected messages like normal stimuli
+      Metrics.recordExternalInput(kind)
       sendToOneEligibleNeighbor(kind, payload)
 
     case Inbound(env) =>
+      Metrics.recordReceived(env.kind)
       algorithms.foreach(_.onMessage(ctxImpl, env))
 
   private def sampleKindFromPdf(pdf: Pdf): Option[MsgKind] =
@@ -90,7 +101,12 @@ final class NodeActor(id: NodeId, algorithms: List[DistributedAlgorithm])
       allowed.getOrElse(to, Set.empty).contains(kind)
     }.toVector.sortBy(_.value)
 
-    eligible.headOption.foreach { to =>
-      ctxImpl.send(to, Algorithm.Envelope(from = id, kind = kind, payload = payload))
-    }
+    eligible.headOption match
+      case Some(to) =>
+        ctxImpl.send(to, Algorithm.Envelope(from = id, kind = kind, payload = payload))
+      case None =>
+        if nbrs.nonEmpty then
+          // The node had neighbors, but all channels filtered this kind.
+          Metrics.recordDropped(kind)
+          log.debug(s"edge-filter drop from=${id.value} kind=${kind} reason=no-eligible-neighbor")
 

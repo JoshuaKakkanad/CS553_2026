@@ -4,13 +4,19 @@ object GraphGenerators:
 
   /**
    * Deterministic directed ring: i -> (i+1) mod n.
-   * Useful because your assigned algorithm #15 is a probabilistic anonymous ring election.
+   * Useful for ring-based algorithms (leader election, ring size, token passing).
    */
   def directedRing(n: Int): Vector[Edge] =
     require(n >= 2, "ring requires at least 2 nodes")
     (0 until n).toVector.map { i =>
       Edge(NodeId(i), NodeId((i + 1) % n))
     }
+
+  /** Bidirectional ring: i <-> (i+1) mod n (as two directed edges). */
+  def bidirectionalRing(n: Int): Vector[Edge] =
+    val cw = directedRing(n)
+    val ccw = cw.map(e => Edge(e.to, e.from))
+    (cw ++ ccw).distinct
 
   def defaultEdgeLabel: EdgeLabel =
     EdgeLabel(Set(MsgKind.CONTROL, MsgKind.PING))
