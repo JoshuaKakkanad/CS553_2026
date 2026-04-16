@@ -1,239 +1,98 @@
-# CS553_2026 - Distributed Algorithms Framework
+# CS553_2026 - Course Project Simulator
 
-An open-source repository for a grad-level course at UIC on distributed systems. This project provides an Akka-based framework for students to develop and experiment with distributed algorithms.
+This repository contains the CS553 course-project implementation of an Akka classic distributed-systems simulator that maps enriched graphs to actor networks and runs assigned distributed algorithms.
 
-## Overview
+## What This Repo Runs Today
 
-This framework allows students to:
-- Implement and experiment with classical distributed algorithms
-- Study distributed system concepts through hands-on experimentation
-- Develop custom distributed algorithms using Akka actors
-- Observe algorithm behavior in a controlled environment
-
-## Features
-
-- **Akka Actor-Based Framework**: Built on Akka Typed actors for robust distributed computation
-- **Multiple Algorithm Implementations**:
-  - **Echo Algorithm**: Broadcast and convergcast operations
-  - **Bully Leader Election**: Leader election with priority-based selection
-  - **Token Ring**: Mutual exclusion using token passing
-- **Experiment Runner**: Utilities for running and observing distributed algorithms
-- **Extensible Architecture**: Easy to add new algorithms
+- Graph to actor mapping (`node -> Actor`, `edge -> ActorRef channel`)
+- Config-driven edge labels and enforcement
+- Config-driven PDFs (explicit, uniform, zipf) with per-node overrides
+- Config-driven initiators:
+  - timer nodes (`pdf` or `fixed` mode)
+  - input nodes for external injections
+- CLI injection modes:
+  - file-driven (`--inject-file`)
+  - interactive (`--interactive`)
+- Output artifacts:
+  - `graph.json`
+  - `metrics.json`
+- Assigned algorithms integrated:
+  - Awerbuch beta synchronizer
+  - Itai-Rodeh ring-size variant (ring-only; skipped on non-ring graphs)
+- NetGameSim integration for DOT exports (`.ngs.dot`, `.ngs.perturbed.dot`)
 
 ## Prerequisites
 
-- Java 11 or higher
-- Scala 2.13.x
-- SBT 1.9.x
+- Java 11+
+- SBT 1.9+
+- Scala 3.3.x (configured in `build.sbt`)
 
-## Getting Started
-
-### Building the Project
+## Build and Test
 
 ```bash
 sbt compile
+sbt test
 ```
 
-### Simulator CLI (CourseProject.MD track)
+## Main CLI
 
-The course-project simulator entrypoint is:
+Entrypoint:
 
 ```bash
 sbt "runMain edu.uic.cs553.sim.cli.SimMain"
 ```
 
-Useful CLI flags:
+Common options:
 
-- `--config <path>`: use a specific `.conf` file (examples in `conf/`)
-- `--out <dir>`: write `graph.json` + `metrics.json` to an output directory
-- `--write-graph <path>`: write the generated graph JSON and exit
-- `--graph <path>`: load graph JSON instead of generating it
-- `--run <10s|250ms|2m>`: override `sim.runForSeconds`
-- `--inject-file <path>`: schedule injections from a text file (`atMs node kind payload...`)
-- `--interactive`: interactive injection from stdin (`send <node> <KIND> <payload...>`, `quit`)
+- `--config <path>`: use a specific config file from `conf/`
+- `--out <dir>`: write `graph.json` and `metrics.json`
+- `--write-graph <path>`: write enriched graph JSON and exit
+- `--graph <path>`: load enriched graph JSON
+- `--netgamesim <path>`: load NetGameSim `.dot` / `.perturbed.dot`
+- `--run <10s|250ms|2m>`: override runtime duration
+- `--inject-file <path>`: scheduled external injections (`atMs node kind payload...`)
+- `--interactive`: interactive injections (`send <node> <KIND> <payload...>`, `quit`)
 
-Example (run + output artifacts):
+## Example Commands
+
+### 1) Standard experiment with metrics output
 
 ```bash
 rm -rf outputs/run1
 sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment3_injection_demo.conf --inject-file conf/injections_demo.txt --out outputs/run1"
-ls outputs/run1
 ```
 
-### Running Examples
-
-The project includes several example applications demonstrating different distributed algorithms:
-
-#### Echo Algorithm
+### 2) Graph artifact write/load workflow
 
 ```bash
-sbt "runMain com.uic.cs553.distributed.examples.EchoAlgorithmExample"
+rm -rf outputs/run2
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment1_small_ring.conf --write-graph outputs/run2/graph.json"
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --graph outputs/run2/graph.json --config conf/experiment1_small_ring.conf --out outputs/run2"
 ```
 
-The Echo algorithm demonstrates:
-- Wave propagation from an initiator node
-- Echo collection from all nodes
-- Termination detection
-
-#### Bully Leader Election
+### 3) Real NetGameSim DOT ingestion
 
 ```bash
-sbt "runMain com.uic.cs553.distributed.examples.BullyLeaderElectionExample"
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --netgamesim NetGameSimOut/NetGraph_16-04-26-11-19-04.ngs.perturbed.dot --config conf/experiment1_small_ring.conf --out outputs/netgamesim-real --run 10s"
 ```
 
-The Bully algorithm demonstrates:
-- Leader election based on node IDs
-- Election message propagation
-- Leader announcement
+## Cinnamon Status (CourseProject.MD Note)
 
-#### Token Ring
+`CourseProject.MD` asks for Cinnamon instrumentation, but Cinnamon artifacts are behind Akka tokenized repository access. In this repository state, Cinnamon is intentionally **not hard-enabled in `build.sbt`** to keep `sbt compile/test/run` stable on clean machines.
 
-```bash
-sbt "runMain com.uic.cs553.distributed.examples.TokenRingExample"
-```
+If your environment has valid Akka commercial repository access, Cinnamon can be enabled locally by following the tokenized resolver + plugin/dependency steps in `CourseProject.MD`.
 
-The Token Ring algorithm demonstrates:
-- Mutual exclusion through token passing
-- Fair access to critical sections
-- Ring topology
+## NetGameSim File Compatibility
 
-## Project Structure
+- Supported directly by `--netgamesim`:
+  - `*.ngs.dot`
+  - `*.ngs.perturbed.dot`
+- Not supported directly:
+  - `*.ngs`, `*.ngs.perturbed` (internal serialized format)
 
-```
-src/main/scala/com/uic/cs553/distributed/
-├── framework/           # Core framework classes
-│   ├── DistributedNode.scala          # Base classes for nodes
-│   └── ExperimentRunner.scala         # Experiment execution utilities
-├── algorithms/          # Distributed algorithm implementations
-│   ├── EchoAlgorithm.scala
-│   ├── BullyLeaderElection.scala
-│   └── TokenRingAlgorithm.scala
-└── examples/           # Example applications
-    ├── EchoAlgorithmExample.scala
-    ├── BullyLeaderElectionExample.scala
-    └── TokenRingExample.scala
-```
+Use the corresponding DOT export when running the simulator.
 
-## Implementing Your Own Algorithm
+## Notes on Legacy Modules
 
-To create a custom distributed algorithm:
-
-1. **Extend the base classes**:
-
-```scala
-import com.uic.cs553.distributed.framework._
-
-class MyAlgorithmNode(nodeId: String) extends BaseDistributedNode(nodeId) {
-  override protected def onMessage(
-    ctx: ActorContext[DistributedMessage],
-    msg: DistributedMessage
-  ): Behavior[DistributedMessage] = {
-    // Implement your algorithm logic here
-    msg match {
-      case CommonMessages.Start() =>
-        // Initialize your algorithm
-        Behaviors.same
-      case _ =>
-        Behaviors.same
-    }
-  }
-}
-```
-
-2. **Create an example application**:
-
-```scala
-import com.uic.cs553.distributed.framework.ExperimentRunner
-
-object MyAlgorithmExample extends App {
-  ExperimentRunner.runExperiment(
-    algorithmName = "My Algorithm",
-    nodeCount = 5,
-    nodeFactory = (id: String) => new MyAlgorithmNode(id),
-    durationSeconds = 30
-  )
-}
-```
-
-3. **Run your algorithm**:
-
-```bash
-sbt "runMain com.uic.cs553.distributed.examples.MyAlgorithmExample"
-```
-
-## Key Concepts
-
-### DistributedNode
-
-The base class for all nodes in a distributed algorithm. Provides:
-- Automatic peer initialization
-- Message handling infrastructure
-- Broadcasting capabilities
-
-### ExperimentRunner
-
-A utility for running distributed algorithm experiments with:
-- Automatic node creation and initialization
-- Coordinated start/stop of algorithms
-- Configurable execution duration
-
-### Message Types
-
-All messages extend `DistributedMessage`. Common messages include:
-- `Initialize`: Set up node connections
-- `Start`: Begin algorithm execution
-- `Stop`: Terminate the algorithm
-
-## Advanced Usage
-
-### Custom Network Topologies
-
-While the framework defaults to a fully-connected topology, you can create custom topologies by controlling peer initialization:
-
-```scala
-// Example: Ring topology
-val nodes = createNodes(nodeCount)
-nodes.zipWithIndex.foreach { case (node, i) =>
-  val nextNode = nodes((i + 1) % nodes.length)
-  node ! SetNext(nextNode)
-}
-```
-
-### State Monitoring
-
-Query node states during execution:
-
-```scala
-node ! CommonMessages.GetState(replyTo)
-```
-
-## Testing
-
-Run tests with:
-
-```bash
-sbt test
-```
-
-## Contributing
-
-Students are encouraged to:
-1. Implement additional distributed algorithms
-2. Enhance existing algorithms with new features
-3. Add visualization or monitoring capabilities
-4. Improve documentation
-
-## License
-
-See the LICENSE file for details.
-
-## Course Information
-
-This repository is part of CS553 - Distributed Systems at the University of Illinois Chicago (UIC).
-
-## Further Reading
-
-- [Akka Documentation](https://akka.io/docs/)
-- "Distributed Algorithms" by Nancy Lynch
-- "Introduction to Reliable and Secure Distributed Programming" by Cachin, Guerraoui, and Rodrigues
+This repo still contains older `com.uic.cs553.distributed.*` teaching/example modules. The project submission path used for CourseProject.MD is `edu.uic.cs553.sim.*`.
 
