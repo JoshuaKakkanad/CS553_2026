@@ -96,3 +96,65 @@ Use the corresponding DOT export when running the simulator.
 
 This repo still contains older `com.uic.cs553.distributed.*` teaching/example modules. The project submission path used for CourseProject.MD is `edu.uic.cs553.sim.*`.
 
+## Grader Submission Checklist (CourseProject.MD minus Cinnamon)
+
+This checklist is the fastest way to verify the course-project deliverables on a clean checkout.
+
+### 1) Build + tests
+
+```bash
+sbt compile
+sbt test
+```
+
+Expected: all tests pass (currently 11 tests).
+
+### 2) Three experiment configurations
+
+These are checked into `conf/`:
+
+- `conf/experiment1_small_ring.conf`
+- `conf/experiment2_edge_override.conf`
+- `conf/experiment3_injection_demo.conf`
+
+Run each and confirm it produces `graph.json` + `metrics.json`:
+
+```bash
+rm -rf outputs/exp1 outputs/exp2 outputs/exp3
+
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment1_small_ring.conf --out outputs/exp1 --run 8s"
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment2_edge_override.conf --out outputs/exp2 --run 10s"
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment3_injection_demo.conf --inject-file conf/injections_demo.txt --out outputs/exp3 --run 15s"
+
+ls outputs/exp1 outputs/exp2 outputs/exp3
+```
+
+### 3) NetGameSim artifact ingestion (DOT)
+
+Use the NetGameSim DOT exports (not `.ngs`):
+
+```bash
+rm -rf outputs/netgamesim-real
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --netgamesim NetGameSimOut/NetGraph_16-04-26-11-19-04.ngs.perturbed.dot --config conf/experiment1_small_ring.conf --out outputs/netgamesim-real --run 10s"
+ls outputs/netgamesim-real
+```
+
+Expected behavior note:
+
+- NetGameSim graphs are not bidirectional rings, so the simulator prints that `ItaiRodehRingSize` is skipped and runs `BetaSynchronizer` only.
+
+### 4) Report
+
+See `docs/REPORT.md` for:
+
+- system model
+- message protocols
+- assumptions/variants
+- how to run experiments
+
+### 5) Cinnamon (explicitly out of scope for this submission build)
+
+`CourseProject.MD` mentions Cinnamon, but this repository is configured to remain buildable without commercial Akka tokenized repository access.
+
+If you need Cinnamon locally, follow Akka’s tokenized resolver instructions and enable Cinnamon plugin/deps as described in `CourseProject.MD`.
+

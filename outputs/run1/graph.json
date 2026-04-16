@@ -1,0 +1,531 @@
+{
+  "nodes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "edges": [
+    {
+      "from": 0,
+      "to": 1
+    },
+    {
+      "from": 1,
+      "to": 2
+    },
+    {
+      "from": 2,
+      "to": 3
+    },
+    {
+      "from": 3,
+      "to": 4
+    },
+    {
+      "from": 4,
+      "to": 5
+    },
+    {
+      "from": 5,
+      "to": 6
+    },
+    {
+      "from": 6,
+      "to": 7
+    },
+    {
+      "from": 7,
+      "to": 8
+    },
+    {
+      "from": 8,
+      "to": 9
+    },
+    {
+      "from": 9,
+      "to": 0
+    },
+    {
+      "from": 1,
+      "to": 0
+    },
+    {
+      "from": 2,
+      "to": 1
+    },
+    {
+      "from": 3,
+      "to": 2
+    },
+    {
+      "from": 4,
+      "to": 3
+    },
+    {
+      "from": 5,
+      "to": 4
+    },
+    {
+      "from": 6,
+      "to": 5
+    },
+    {
+      "from": 7,
+      "to": 6
+    },
+    {
+      "from": 8,
+      "to": 7
+    },
+    {
+      "from": 9,
+      "to": 8
+    },
+    {
+      "from": 0,
+      "to": 9
+    }
+  ],
+  "edgeLabels": [
+    [
+      {
+        "from": 4,
+        "to": 3
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 0,
+        "to": 1
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 0,
+        "to": 9
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 7,
+        "to": 8
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 9,
+        "to": 0
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 3,
+        "to": 4
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 2,
+        "to": 3
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 8,
+        "to": 9
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 8,
+        "to": 7
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 5,
+        "to": 4
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 3,
+        "to": 2
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 5,
+        "to": 6
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 4,
+        "to": 5
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 1,
+        "to": 0
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 7,
+        "to": 6
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 6,
+        "to": 7
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 6,
+        "to": 5
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 2,
+        "to": 1
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 9,
+        "to": 8
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ],
+    [
+      {
+        "from": 1,
+        "to": 2
+      },
+      {
+        "allowed": [
+          "CONTROL",
+          "PING",
+          "WORK",
+          "ACK"
+        ]
+      }
+    ]
+  ],
+  "nodePdfs": [
+    [
+      0,
+      {
+        "p": [
+          [
+            "WORK",
+            0.7
+          ],
+          [
+            "PING",
+            0.3
+          ]
+        ]
+      }
+    ],
+    [
+      5,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      1,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      6,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      9,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      2,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      7,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      3,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      8,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ],
+    [
+      4,
+      {
+        "p": [
+          [
+            "PING",
+            0.5
+          ],
+          [
+            "GOSSIP",
+            0.5
+          ]
+        ]
+      }
+    ]
+  ],
+  "seed": 3
+}

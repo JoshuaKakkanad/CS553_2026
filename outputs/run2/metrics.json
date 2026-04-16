@@ -1,0 +1,6 @@
+{
+  "sent": {"CONTROL": 16, "PING": 80},
+  "received": {"CONTROL": 16, "PING": 80},
+  "dropped": {},
+  "externalInputs": {}
+}

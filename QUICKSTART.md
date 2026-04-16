@@ -2,6 +2,20 @@
 
 This guide will help you get started with the Distributed Algorithms Framework quickly.
 
+## Course project simulator (primary)
+
+For the CS553 course project track described in `CourseProject.MD`, use the Akka classic simulator entrypoint:
+
+```bash
+sbt compile
+sbt test
+sbt "runMain edu.uic.cs553.sim.cli.SimMain"
+```
+
+See `README.md` for the full CLI flags, experiment configs under `conf/`, and NetGameSim DOT ingestion.
+
+The remainder of this document describes optional legacy `com.uic.cs553.distributed.*` examples.
+
 ## Prerequisites
 
 1. **Install Java 11+**
