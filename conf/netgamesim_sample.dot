@@ -1,0 +1,7 @@
+digraph "Net graph with 4 nodes" {
+  "0" -> "1" [weight="+1.0"]
+  "1" -> "2" [weight="+2.0"]
+  "2" -> "3" [weight="+3.0"]
+  "3" -> "0" [weight="+4.0"]
+}
+

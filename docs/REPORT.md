@@ -85,11 +85,54 @@ This produces:
 - `outputs/run1/graph.json`
 - `outputs/run1/metrics.json`
 
+### NetGameSim integration
+
+This project now supports ingesting **NetGameSim DOT exports** directly:
+
+- `*.ngs.dot`
+- `*.ngs.perturbed.dot`
+
+Use:
+
+```bash
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --netgamesim NetGameSimOut/NetGraph_16-04-26-11-19-04.ngs.perturbed.dot --config conf/experiment1_small_ring.conf --out outputs/netgamesim-real --run 10s"
+```
+
+Important:
+
+- `*.ngs` / `*.ngs.perturbed` are NetGameSim internal serialized artifacts and are **not** consumed directly by this simulator.
+- The CLI intentionally fails fast on `.ngs` with an actionable error asking for the `.dot` export.
+
+### Cinnamon instrumentation setup
+
+In this environment, enabling Cinnamon directly in `build.sbt` caused dependency resolution failures without a valid Akka tokenized resolver setup (403/forbidden from `repo.akka.io`).
+
+To keep the repository buildable for grading, Cinnamon dependencies are **not hard-enabled** in the committed build.
+
+To enable Cinnamon on a machine with valid commercial access:
+
+```bash
+export AKKA_MAVEN_TOKEN="<your akka token>"
+# then add the Cinnamon plugin/deps exactly as shown in CourseProject.MD
+# and verify:
+sbt test
+sbt "runMain edu.uic.cs553.sim.cli.SimMain --config conf/experiment1_small_ring.conf --out outputs/cinnamon-run"
+```
+
+This limitation is environmental (tokenized repository access), not a simulator runtime bug.
+
+### Topology safety for assigned algorithms
+
+- `Awerbuch beta synchronizer` runs on any directed graph.
+- `Itai–Rodeh ring size` is ring-specific in this implementation.  
+  The runtime checks for bidirectional ring compatibility and skips the ring-size module on non-ring topologies.
+
 ### Tests
 
 Added ScalaTest coverage for the simulator-side algorithms in:
 
 - `src/test/scala/edu/uic/cs553/sim/algorithms/SimAlgorithmsSpec.scala`
+- `src/test/scala/edu/uic/cs553/sim/core/NetGameSimIOSpec.scala`
 
 Run:
 

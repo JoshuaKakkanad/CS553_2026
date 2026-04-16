@@ -36,10 +36,7 @@ object SimMain:
                 if sim.hasPath("netgamesim.treatUndirectedAsBidirectional")
                 then sim.getBoolean("netgamesim.treatUndirectedAsBidirectional")
                 else true
-              val topology = NetGameSimIO.readTopology(
-                json = java.nio.file.Files.readString(path),
-                treatUndirectedAsBidirectional = undirectedAsBi
-              )
+              val topology = NetGameSimIO.readTopology(path, treatUndirectedAsBidirectional = undirectedAsBi)
               SimConfig.enrichGraph(conf, topology.nodes, topology.edges, seed)
             case None =>
               SimConfig.buildGraph(conf)
@@ -58,11 +55,19 @@ object SimMain:
   private def runSimulation(conf: com.typesafe.config.Config, cli: SimConfig.CliArgs, g: EnrichedGraph): Unit =
     val system = ActorSystem("sim")
     try
+      val ringCompatible = isBidirectionalRing(g)
       val algorithms: List[DistributedAlgorithm] =
-        List(
-          new BetaSynchronizer(maxPulses = 5),
-          new ItaiRodehRingSize()
-        )
+        if ringCompatible then
+          List(
+            new BetaSynchronizer(maxPulses = 5),
+            new ItaiRodehRingSize()
+          )
+        else
+          println(
+            s"[sim] graph is not a bidirectional ring (nodes=${g.nodes.size}, edges=${g.edges.size}). " +
+              s"Skipping ItaiRodehRingSize; running BetaSynchronizer only."
+          )
+          List(new BetaSynchronizer(maxPulses = 5))
 
       val nodeRefs =
         g.nodes.map { id =>
@@ -149,4 +154,15 @@ object SimMain:
 
   private def toJsonObj(m: Map[String, Long]): String =
     m.toVector.sortBy(_._1).map { case (k, v) => "\"" + k + "\": " + v }.mkString("{", ", ", "}")
+
+  private def isBidirectionalRing(g: EnrichedGraph): Boolean =
+    val n = g.nodes.size
+    if n < 2 then false
+    else if g.edges.distinct.size != n * 2 then false
+    else
+      val inDeg = g.nodes.map(id => id -> 0).toMap
+      val outDeg = g.nodes.map(id => id -> 0).toMap
+      val out = g.edges.foldLeft(outDeg) { case (acc, e) => acc.updated(e.from, acc(e.from) + 1) }
+      val in = g.edges.foldLeft(inDeg) { case (acc, e) => acc.updated(e.to, acc(e.to) + 1) }
+      g.nodes.forall(id => out(id) == 2 && in(id) == 2)
 
